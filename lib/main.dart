@@ -48,9 +48,13 @@ class _TestAppState extends State<TestApp> {
     return convert.jsonDecode(response.body) as Map;
   }
 
-  Warp parseWarp(Map json, int item) {
+  List<Warp> parseWarp(Map json) {
     print('json parsing');
-    return Warp.fromJson(json['data']['list'][item] as Map);
+    List<Warp> l = [];
+    for(int i=0; i<(json['data']['list'].length as int); i++) {
+      l.add(Warp.fromJson(json['data']['list'][i] as Map));
+    }
+    return l;
   }
 
   @override
@@ -69,10 +73,7 @@ class _TestAppState extends State<TestApp> {
               children: [
                 CupertinoButton(
                   onPressed: () async {
-                    Map d = await fetchJson('${await getWarpUrl('C:\\Star Rail game')}&page=$_page&size=$_size&gacha_type=$_gachaType&end_id=$_endId');
-                    for(int i = 0; i<5; i++) {
-                      warpList.add(parseWarp(d, i));
-                    }
+                    warpList = parseWarp(await fetchJson('${await getWarpUrl('C:\\Star Rail game')}&page=$_page&size=$_size&gacha_type=$_gachaType&end_id=$_endId'));
                     setState(() {});
                   },
                   child: Text('Submit'),

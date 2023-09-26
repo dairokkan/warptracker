@@ -1,0 +1,6 @@
+# because github thinks my program was in c++ ;_;
+*.h linguist-detectable=false
+*.c linguist-detectable=false
+*.cpp linguist-detectable=false
+*.cmake linguist-detectable=false
+CMakeLists.txt linguist-detectable=false
