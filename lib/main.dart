@@ -32,10 +32,17 @@ class TestApp extends StatefulWidget {
 class _TestAppState extends State<TestApp> {
   List<Warp> warpList = [];
 
-  final int _page = 1;
-  final int _size = 5;
-  final int _gachaType = 11;
-  final int _endId = 0;
+  static int _page = 0;
+  static final int _size = 5;
+  static final int _gachaType = 11;
+  static int _endId = 0;
+
+  String generateURL(String url) {
+    print('generating url');
+    _page++;
+    _endId = (warpList.length==0)?0:warpList[warpList.length-1].id;
+    return('$url&page=$_page&size=$_size&gacha_type=$_gachaType&end_id=$_endId');
+  }
 
   Future<Map> fetchJson(String query) async {
     print('netreq sent');
@@ -45,14 +52,14 @@ class _TestAppState extends State<TestApp> {
     } catch (err) {
       throw Exception('NetRequest failed');
     }
-    return convert.jsonDecode(response.body) as Map;
+    return convert.jsonDecode(response.body);
   }
 
   List<Warp> parseWarp(Map json) {
     print('json parsing');
     List<Warp> l = [];
-    for(int i=0; i<(json['data']['list'].length as int); i++) {
-      l.add(Warp.fromJson(json['data']['list'][i] as Map));
+    for(int i=0; i<(json['data']['list'].length); i++) {
+      l.add(Warp.fromJson(json['data']['list'][i]));
     }
     return l;
   }
@@ -73,7 +80,12 @@ class _TestAppState extends State<TestApp> {
               children: [
                 CupertinoButton(
                   onPressed: () async {
-                    warpList = parseWarp(await fetchJson('${await getWarpUrl('C:\\Star Rail game')}&page=$_page&size=$_size&gacha_type=$_gachaType&end_id=$_endId'));
+                    _page=0;
+                    warpList=[];
+                    final String url = await getWarpUrl('C:\\Star Rail game');
+                    for(int i=0; i<5; i++){
+                      warpList.addAll(parseWarp(await fetchJson(generateURL(url))));
+                    }
                     setState(() {});
                   },
                   child: Text('Submit'),
@@ -82,7 +94,8 @@ class _TestAppState extends State<TestApp> {
                   shrinkWrap: true,
                   children: warpList.map((item) => WarpData(props: item)).toList(),
                 )
-            ]),
+              ]
+            ),
           )
         )
       ),
