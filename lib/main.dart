@@ -90,9 +90,14 @@ class _TestAppState extends State<TestApp> {
                   },
                   child: Text('Submit'),
                 ),
-                ListView(
-                  shrinkWrap: true,
-                  children: warpList.map((item) => WarpData(props: item)).toList(),
+                Flexible(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: warpList.length,
+                    itemBuilder: (context, index) {
+                      return(WarpData(props: warpList[index],));                    
+                    },
+                  )
                 )
               ]
             ),
