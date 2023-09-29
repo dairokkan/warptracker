@@ -22,32 +22,38 @@ class WarpData extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
+              textAlign: TextAlign.center,
             ),
           ),
         ),
         VerticalDivider(thickness: 0.3,),
         Expanded(
           child: Center(
-            child: Text('${props.rankType}*'),
+            child: Text(
+              '${props.rankType}*',
+              textAlign: TextAlign.center,
+            ),
           ),
         ),
         VerticalDivider(thickness: 1,),
         Expanded(
           child: Center(
-            child: Text(props.time),
+            child: Text(
+              props.time,
+              textAlign: TextAlign.center,
+            ),
           ),
         ),
         VerticalDivider(thickness: 1,),
         Expanded(
           child: Center(
-            child: Text(props.itemType),
+            child: Text(
+              props.itemType,
+              textAlign: TextAlign.center,
+            ),
           ),
         ),
       ],
     );
   }
-}
-
-void main() {
-  
 }

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
 import 'package:window_manager/window_manager.dart';
+import 'package:smooth_scroll_multiplatform/smooth_scroll_multiplatform.dart';
 
 import './warp.dart';
-import './warpData.dart';
-import './getWarpUrl.dart';
+import './WarpData.dart';
+import './GetWarpUrl.dart';
+import './ParseWarps.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,50 +19,20 @@ void main() async {
     await windowManager.show();
     await windowManager.focus();
   });
-  runApp(const TestApp());
+  runApp(const MainView());
 }
 
-class TestApp extends StatefulWidget {
-  const TestApp({super.key});
+class MainView extends StatefulWidget {
+  const MainView({super.key});
 
   @override
-  State<TestApp> createState() => _TestAppState();
+  State<MainView> createState() => _MainViewState();
 }
 
-class _TestAppState extends State<TestApp> {
+class _MainViewState extends State<MainView> {
   List<Warp> warpList = [];
 
-  static int _page = 0;
-  static final int _size = 5;
-  static final int _gachaType = 11;
-  static int _endId = 0;
-
-  String generateURL(String url) {
-    print('generating url');
-    _page++;
-    _endId = (warpList.length==0)?0:warpList[warpList.length-1].id;
-    return('$url&page=$_page&size=$_size&gacha_type=$_gachaType&end_id=$_endId');
-  }
-
-  Future<Map> fetchJson(String query) async {
-    print('netreq sent');
-    http.Response response;
-    try {
-      response = await http.get(Uri.parse(query));
-    } catch (err) {
-      throw Exception('NetRequest failed');
-    }
-    return convert.jsonDecode(response.body);
-  }
-
-  List<Warp> parseWarp(Map json) {
-    print('json parsing');
-    List<Warp> l = [];
-    for(int i=0; i<(json['data']['list'].length); i++) {
-      l.add(Warp.fromJson(json['data']['list'][i]));
-    }
-    return l;
-  }
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -70,33 +40,49 @@ class _TestAppState extends State<TestApp> {
     return MaterialApp(
       theme: ThemeData(
         brightness: Brightness.dark,
-        fontFamily: 'Segoe UI'
+        fontFamily: 'Segoe UI',
+        useMaterial3: false
       ),
       home: Scaffold(
         body: Container(
           padding: EdgeInsets.all(10),
           child: Center(
-          child: Column(
+            child: Column(
               children: [
                 CupertinoButton(
                   onPressed: () async {
-                    _page=0;
-                    warpList=[];
-                    final String url = await getWarpUrl('C:\\Star Rail game');
-                    for(int i=0; i<5; i++){
-                      warpList.addAll(parseWarp(await fetchJson(generateURL(url))));
-                    }
+                    _isLoading = true;
+                    setState(() {});
+                    warpList = await exportWarps(await getWarpUrl('C:\\Star Rail game'));
+                    _isLoading = false;
                     setState(() {});
                   },
                   child: Text('Submit'),
                 ),
-                Flexible(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: warpList.length,
-                    itemBuilder: (context, index) {
-                      return(WarpData(props: warpList[index],));                    
-                    },
+                Container (
+                  child: !_isLoading?
+                    Flexible (
+                      child: DynMouseScroll(
+                        animationCurve: Curves.easeOutExpo,
+                        scrollSpeed: 1.0,
+                        builder:(context, controller, physics) =>  ListView.builder(
+                          controller: controller,
+                          physics: physics,
+                          shrinkWrap: true,
+                          itemCount: warpList.length,
+                          itemBuilder: (context, index) {
+                            return(WarpData(props: warpList[index],));
+                          },
+                        )
+                      )
+                    )
+                  : Center (
+                    child: Column(
+                      children: [
+                        CircularProgressIndicator(color: Colors.blue,),
+                        Text('Processing')
+                      ],
+                    )
                   )
                 )
               ]
@@ -104,6 +90,21 @@ class _TestAppState extends State<TestApp> {
           )
         )
       ),
+    );
+  }
+}
+
+class DirSelect extends StatelessWidget {
+  const DirSelect ({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return(
+      Row(
+        children: [
+
+        ],
+      )
     );
   }
 }
