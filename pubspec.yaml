@@ -16,6 +16,7 @@ dependencies:
   http: ^1.1.0
   window_manager: ^0.3.6
   smooth_scroll_multiplatform: ^1.0.8
+  file_picker: ^5.5.0
 
 dev_dependencies:
   flutter_test:

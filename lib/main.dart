@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:smooth_scroll_multiplatform/smooth_scroll_multiplatform.dart';
+import 'package:file_picker/file_picker.dart';
 
 import './warp.dart';
 import './WarpData.dart';
@@ -31,8 +34,8 @@ class MainView extends StatefulWidget {
 
 class _MainViewState extends State<MainView> {
   List<Warp> warpList = [];
-
   bool _isLoading = false;
+  String _dir = 'C:\\Program Files\\Star Rail\\Star Rail game';
 
   @override
   Widget build(BuildContext context) {
@@ -49,15 +52,23 @@ class _MainViewState extends State<MainView> {
           child: Center(
             child: Column(
               children: [
-                CupertinoButton(
-                  onPressed: () async {
-                    _isLoading = true;
-                    setState(() {});
-                    warpList = await exportWarps(await getWarpUrl('C:\\Star Rail game'));
-                    _isLoading = false;
-                    setState(() {});
-                  },
-                  child: Text('Submit'),
+                Row (
+                  children: [
+                    Expanded(child:
+                      Text(_dir),
+                    ),
+                    CupertinoButton(child: Icon(Icons.folder_outlined), onPressed: () async {
+                      _dir = await FilePicker.platform.getDirectoryPath() as String;
+                      setState(() {});
+                    }),
+                    CupertinoButton(child: Icon(Icons.refresh), onPressed: () async {
+                      _isLoading=true;
+                      setState(() {});
+                      warpList = await exportWarps(await getWarpUrl(_dir), 5, 11);
+                      _isLoading = false;
+                      setState(() {});
+                    },)
+                  ],
                 ),
                 Container (
                   child: !_isLoading?
@@ -76,35 +87,18 @@ class _MainViewState extends State<MainView> {
                         )
                       )
                     )
-                  : Center (
-                    child: Column(
+                  : Column(
                       children: [
                         CircularProgressIndicator(color: Colors.blue,),
                         Text('Processing')
                       ],
                     )
-                  )
                 )
               ]
             ),
           )
         )
       ),
-    );
-  }
-}
-
-class DirSelect extends StatelessWidget {
-  const DirSelect ({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return(
-      Row(
-        children: [
-
-        ],
-      )
     );
   }
 }

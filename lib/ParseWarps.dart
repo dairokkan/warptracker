@@ -27,15 +27,13 @@ List<Warp> parseWarp(Map json) {
   return l;
 }
 
-Future<List<Warp>> exportWarps(String url) async {
-  final int _size = 5;
-  final int _gachaType = 11;
-  int _endId = 0;
+Future<List<Warp>> exportWarps(String url, int size, int gachaType) async {
+  int endId = 0;
   List<Warp> l = [];
 
   for(int i = 1; i<=5; i++) {
-    l.addAll(parseWarp(await fetchJson(generateURL(url, i, _endId, _gachaType, _size))));
-    _endId = l[l.length-1].id;
+    l.addAll(parseWarp(await fetchJson(generateURL(url, i, endId, gachaType, size))));
+    endId = l[l.length-1].id;
   }
 
   return l;
