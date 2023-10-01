@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:warptracker/ThrowError.dart';
+import './ThrowError.dart';
 import './main.dart';
 
 Future<String> getWarpUrl (String filePath) async {

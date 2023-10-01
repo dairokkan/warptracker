@@ -22,6 +22,19 @@ void main() async {
     await windowManager.show();
     await windowManager.focus();
   });
+  FlutterError.onError = (details) {
+    scaffoldKey.currentState?.showSnackBar(
+      SnackBar(
+        content: Text('$details'),
+        action: SnackBarAction(
+          label: 'Dismiss',
+          onPressed: () {
+            scaffoldKey.currentState?.hideCurrentSnackBar();
+          },
+        ),
+      )
+    );    
+  };
   runApp(MainView());
 }
 
@@ -98,7 +111,7 @@ class MainViewState extends State<MainView> {
                           itemCount: warpList.length,
                           itemBuilder: (context, index) {
                             return(WarpData(props: warpList[index],));
-                          },
+                         },
                         )
                       )
                     )
