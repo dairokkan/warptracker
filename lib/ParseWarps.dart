@@ -1,7 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import './warp.dart';
-import './main.dart';
 import './ThrowError.dart';
 
 bool isFinished = false;
@@ -17,7 +16,7 @@ Future<Map> fetchJson(String query) async {
   try {
     response = await http.get(Uri.parse(query));
   } catch (err) {
-    throwError(scaffoldKey, 'Failed to send net request');
+    throwError('Failed to send net request');
     throw Exception();
   }
   return convert.jsonDecode(response.body);

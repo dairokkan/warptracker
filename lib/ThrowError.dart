@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import './main.dart';
 
-void throwError(GlobalKey<ScaffoldMessengerState> k, String message) {
-	k.currentState?.showSnackBar(
+void throwError(String message) {
+	scaffoldKey.currentState?.showSnackBar(
 		SnackBar(
 			content: Text(message),
 			action: SnackBarAction(
 				label: 'Dismiss',
 				onPressed: () {
-					k.currentState?.hideCurrentSnackBar();
+					scaffoldKey.currentState?.hideCurrentSnackBar();
 				},
 			),
 		)

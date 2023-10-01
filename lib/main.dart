@@ -88,9 +88,18 @@ class MainViewState extends State<MainView> {
                         _isLoading=true;
                         setState(() {});
                         if(!(File('$_dir\\StarRail.exe').existsSync())) {
-                          throwError(scaffoldKey, 'Incorrect directory');
+                          throwError('Incorrect directory');
+                          _isLoading=false;
+                          setState(() {});
+                          throw Exception();
                         } else {
-                          warpList = await exportWarps(await getWarpUrl(_dir), 5, 11);
+                          try {
+                            warpList = await exportWarps(await getWarpUrl(_dir), 5, 11);
+                          } catch (e) {
+                            _isLoading=false;
+                            setState(() {});
+                            throw Exception();
+                          }
                         }
                         _isLoading = false;
                         setState(() {});
