@@ -3,11 +3,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:smooth_scroll_multiplatform/smooth_scroll_multiplatform.dart';
 import 'package:file_picker/file_picker.dart';
+import 'dart:io';
 
 import './warp.dart';
 import './WarpData.dart';
 import './GetWarpUrl.dart';
 import './ParseWarps.dart';
+import './ThrowError.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,31 +22,34 @@ void main() async {
     await windowManager.show();
     await windowManager.focus();
   });
-  runApp(const MainView());
+  runApp(MainView());
 }
 
 class MainView extends StatefulWidget {
   const MainView({super.key});
 
   @override
-  State<MainView> createState() => _MainViewState();
+  State<MainView> createState() => MainViewState();
 }
 
-class _MainViewState extends State<MainView> {
+final scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+
+class MainViewState extends State<MainView> {
+
   List<Warp> warpList = [];
   bool _isLoading = false;
   String _dir = 'C:\\Program Files\\Star Rail\\Star Rail game';
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
+      scaffoldMessengerKey: scaffoldKey,
       theme: ThemeData(
         brightness: Brightness.dark,
         fontFamily: 'Segoe UI',
         useMaterial3: false
       ),
-      home: Scaffold(
+      home: Scaffold (
         body: Container(
           padding: EdgeInsets.all(10),
           child: Center(
@@ -55,17 +60,29 @@ class _MainViewState extends State<MainView> {
                     Expanded(child:
                       Text(_dir),
                     ),
-                    CupertinoButton(child: Icon(Icons.folder_outlined), onPressed: () async {
-                      _dir = await FilePicker.platform.getDirectoryPath() as String;
-                      setState(() {});
-                    }),
-                    CupertinoButton(child: Icon(Icons.refresh), onPressed: () async {
-                      _isLoading=true;
-                      setState(() {});
-                      warpList = await exportWarps(await getWarpUrl(_dir), 5, 11);
-                      _isLoading = false;
-                      setState(() {});
-                    },)
+                    MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: 
+                        CupertinoButton(child: Icon(Icons.folder_outlined), onPressed: () async {
+                          _dir = await FilePicker.platform.getDirectoryPath() as String;
+                          setState(() {});
+                        }),
+                    ),
+                    MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: 
+                      CupertinoButton(child: Icon(Icons.refresh), onPressed: () async {
+                        _isLoading=true;
+                        setState(() {});
+                        if(!(File('$_dir\\StarRail.exe').existsSync())) {
+                          throwError(scaffoldKey, 'Incorrect directory');
+                        } else {
+                          warpList = await exportWarps(await getWarpUrl(_dir), 5, 11);
+                        }
+                        _isLoading = false;
+                        setState(() {});
+                      },),
+                    )
                   ],
                 ),
                 Container (

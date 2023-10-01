@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:warptracker/ThrowError.dart';
+import './main.dart';
 
 Future<String> getWarpUrl (String filePath) async {
 	print('Getting warp URL');
@@ -14,5 +16,6 @@ Future<String> getWarpUrl (String filePath) async {
 			}
 		}
 	}
-	throw Exception('No valid link found');
+	throwError(scaffoldKey, 'Failed to get warp url');
+	throw Exception();
 }
